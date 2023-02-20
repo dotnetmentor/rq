@@ -1,3 +1,4 @@
 /dist/
 rq
 coverage.out
+testdata/*.actual

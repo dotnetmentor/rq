@@ -1,0 +1,80 @@
+config:
+  resources:
+    - kind: Package
+      names:
+        plural: packages
+        singular: package
+        short: pkg
+    - kind: Tenant
+      names:
+        plural: tenants
+        singular: tenant
+        short: tnt
+
+resources:
+  tenants:
+    - key: tenant1
+      properties:
+        fullname: Tenant 1
+        theme: theme1
+      when:
+        - default: true
+          tenancy: shared
+    - key: tenant2
+      properties:
+        fullname: Tenant 2
+        theme: theme2
+    - key: tenant3
+      properties:
+        fullname: Tenant 3
+        theme: theme1
+      when:
+        - tenancy: shared
+
+  packages:
+    - key: proxy
+      when:
+        - environment: local
+          build: false
+    - key: db
+      when:
+        - environment: local
+          build: false
+        - environment: dev
+          tenant: ((pr-.*)|(demo-.*))
+          build: false
+    - key: hangfire
+      when:
+        - x: 1
+    - key: graphql
+    - key: backoffice-web
+    - key: checkin-web
+    - key: travel-web
+      when:
+        - tenant: tenant1
+        - tenant: tenant2
+        - tenant: tenant3
+        - environment: dev
+          tenant: ((pr-.*)|(demo-.*))
+    - key: mfa
+    - key: pdf-service
+    - key: ferry-gateway
+      when:
+        - tenant: tenant1
+        - tenant: tenant2
+        - tenant: tenant3
+    - key: adyen-payment-service
+      when:
+        - tenant: tenant1
+        - tenant: tenant2
+        - environment: (local|dev)
+          tenant: demo-wsol
+    - key: mollie-payment-service
+      when:
+        - tenant: tenant3
+    - key: ticket-printer
+      when:
+        - tenant: tenant2
+    - key: localtunnel
+      when:
+        - environment: local

@@ -2,6 +2,11 @@
 
 Resource Query cli
 
+## General
+
+- Properties are metdata about a resource (that can be selected but not queried)
+- Conditions can be queried to filter results (by providing parameters as flags)
+
 ## Install
 
 ### Homebrew tap

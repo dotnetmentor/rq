@@ -1,0 +1,12 @@
+db
+hangfire
+graphql
+backoffice-web
+checkin-web
+travel-web
+mfa
+pdf-service
+ferry-gateway
+adyen-payment-service
+mollie-payment-service
+ticket-printer
