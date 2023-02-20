@@ -1,4 +1,4 @@
-PKG = github.com/cli_template_owner/cli_template_name
+PKG = github.com/dotnetmentor/rq
 COMMIT = $$(git describe --tags --always)
 
 export GO111MODULE=on

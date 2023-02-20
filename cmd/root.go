@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/cli_template_owner/cli_template_name/version"
+	"github.com/dotnetmentor/rq/version"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -19,9 +19,9 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:          "cli_template_name",
-	Short:        "cli_template_name - short description",
-	Long:         `cli_template_name - long description`,
+	Use:          "rq",
+	Short:        "rq - short description",
+	Long:         `rq - long description`,
 	SilenceUsage: true,
 	Version:      fmt.Sprintf("%s (commit=%s)", version.Version, version.Commit),
 }
