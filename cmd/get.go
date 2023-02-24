@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dotnetmentor/rq/internal/pkg/schema"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
@@ -19,21 +18,17 @@ var (
 )
 
 var getCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [resource]",
 	Short: "Get resource by key",
 	Long:  `Get a single resource by key`,
 	Args:  cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		log.Debug().Msg("reading manifest...")
-		m, err := schema.NewManifest(opt.FilePath)
-		if err != nil {
-			return err
-		}
+		m := manifest
 
 		log.Debug().Msg("validating resource type...")
-		rt, ok := m.ResourceType(args[0])
-		if !ok {
-			return fmt.Errorf("unknown resource type %s, valid resource types: %s", args[0], m.ResourceTypeNames())
+		rt, err := m.ValidateResourceType(args[0])
+		if err != nil {
+			return err
 		}
 
 		resourceKey := args[1]
@@ -66,4 +61,5 @@ var getCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(getCmd)
 	getCmd.Flags().StringVarP(&getOpt.Property, "select", "s", "", "selects value of a property (eg. build)")
+	getCmd.SetUsageFunc(customUsageFunc)
 }

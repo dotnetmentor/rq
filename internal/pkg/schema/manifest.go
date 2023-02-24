@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	yaml2 "gopkg.in/yaml.v2"
 )
@@ -34,16 +35,62 @@ func NewManifest(path string) (Manifest, error) {
 	if err != nil {
 		return Manifest{}, fmt.Errorf("failed to parse manifest yaml. %v", err)
 	}
+	m.parsed = true
 
-	// TODO: validate manifest
-	// - Resource keys must be unique for each resource type
+	errors := make([]string, 0)
+	for i, cr := range m.Config.Resources {
+		if cr.Kind == "" {
+			errors = append(errors, fmt.Sprintf("config.resources[%d]: missing property \"kind\"", i))
+		}
+		if cr.Names.Plural == "" {
+			errors = append(errors, fmt.Sprintf("config.resources[%d]: missing property \"plural\"", i))
+		}
+	}
+
+	for _, rt := range m.Config.Resources {
+		keys := make([]string, 0)
+		for _, key := range m.ResourcesOfType(rt).SelectMany(func(i Resource) string {
+			return i.Key
+		}) {
+			if contains(keys, key) {
+				errors = append(errors, fmt.Sprintf("resources[%s].key: key \"%s\" must be unique", rt.Kind, key))
+			}
+			keys = append(keys, key)
+		}
+	}
+
+	if len(errors) > 0 {
+		return m, fmt.Errorf("invalid resource manifest, error(s):\n\n%s", strings.Join(errors, "\n"))
+	}
 
 	return m, nil
 }
 
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
 type Manifest struct {
+	parsed bool
 	Config Config                  `yaml:"config,omitempty"`
 	Root   map[string]ResourceList `yaml:"resources,omitempty"`
+}
+
+func (m Manifest) Parsed() bool {
+	return m.parsed
+}
+
+func (m Manifest) ValidateResourceType(t string) (CustomResource, error) {
+	rt, ok := m.ResourceType(t)
+	if !ok {
+		return CustomResource{}, fmt.Errorf("unknown resource type %s, valid resource types: \n%s", t, m.ResourceTypeNames())
+	}
+	return rt, nil
 }
 
 func (m Manifest) ResourcesOfType(cr CustomResource) ResourceList {

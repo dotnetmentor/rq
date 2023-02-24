@@ -27,9 +27,20 @@ func (n CustomResourceNames) Match(t string) bool {
 }
 
 func (n CustomResourceNames) String() string {
-	if strings.HasPrefix(n.Plural, n.Singular) {
+	out := ""
+	if n.Plural != "" && n.Singular != "" && strings.HasPrefix(n.Plural, n.Singular) {
 		pe := strings.ReplaceAll(n.Plural, n.Singular, "")
-		return fmt.Sprintf("  - %s(%s) (short: %s)", n.Singular, pe, n.Short)
+		out = fmt.Sprintf("  - %s(%s)", n.Singular, pe)
+	} else {
+		v := []string{n.Plural}
+		if n.Singular != "" {
+			v = append(v, n.Singular)
+		}
+		out = fmt.Sprintf("  - %s", strings.Join(v, "/"))
 	}
-	return fmt.Sprintf("  - %s/%s (short: %s)", n.Plural, n.Singular, n.Short)
+
+	if n.Short != "" {
+		out = fmt.Sprintf("%s (short: %s)", out, n.Short)
+	}
+	return out
 }

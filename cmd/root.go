@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/dotnetmentor/rq/internal/pkg/schema"
 	"github.com/dotnetmentor/rq/version"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -17,7 +18,8 @@ type GlobalOptions struct {
 }
 
 var (
-	opt GlobalOptions
+	opt      GlobalOptions
+	manifest schema.Manifest
 )
 
 var RootCmd = &cobra.Command{
@@ -26,13 +28,21 @@ var RootCmd = &cobra.Command{
 	Long:         `rq - for querying resources`,
 	SilenceUsage: true,
 	Version:      fmt.Sprintf("%s (commit=%s)", version.Version, version.Commit),
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		level, err := zerolog.ParseLevel(opt.LogLevel)
 		if err != nil {
 			fmt.Printf("invalid log level %s, err: %s", opt.LogLevel, err)
 			os.Exit(1)
 		}
 		log.Logger = log.Level(level).Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
+
+		log.Debug().Msg("reading manifest...")
+		err = tryReadManifest()
+		if err != nil {
+			return err
+		}
+
+		return nil
 	},
 }
 
@@ -51,6 +61,17 @@ func environmentOrDefault(key string, defaultValue string) string {
 		value = defaultValue
 	}
 	return value
+}
+
+func tryReadManifest() error {
+	if !manifest.Parsed() {
+		m, err := schema.NewManifest(opt.FilePath)
+		if err != nil {
+			return err
+		}
+		manifest = m
+	}
+	return nil
 }
 
 func init() {

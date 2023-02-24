@@ -23,7 +23,7 @@ var (
 )
 
 var queryCmd = &cobra.Command{
-	Use:   "query",
+	Use:   "query [resource]",
 	Short: "Query resources",
 	Long:  `Query resources`,
 	Args:  cobra.ExactArgs(1),
@@ -31,16 +31,12 @@ var queryCmd = &cobra.Command{
 		resetQueryOpt()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		log.Debug().Msg("reading manifest...")
-		m, err := schema.NewManifest(opt.FilePath)
-		if err != nil {
-			return err
-		}
+		m := manifest
 
 		log.Debug().Msg("validating resource type...")
-		rt, ok := m.ResourceType(args[0])
-		if !ok {
-			return fmt.Errorf("unknown resource type %s, valid resource types: %s", args[0], m.ResourceTypeNames())
+		rt, err := m.ValidateResourceType(args[0])
+		if err != nil {
+			return err
 		}
 
 		conditions, err := query.ParseArgs(queryOpt.Parameters)
@@ -93,6 +89,7 @@ func init() {
 	queryCmd.Flags().BoolVarP(&queryOpt.DisableStrictMatching, "disable-strict-matching", "d", false, "disable strict matching (matches conditions where parameter is missing)")
 	queryCmd.Flags().BoolVarP(&queryOpt.Sort, "sort", "s", false, "sort output (lexicographically)")
 	queryCmd.Flags().StringVarP(&queryOpt.Output, "out", "o", output.Newline, "output type (eg. json/xargs)")
+	queryCmd.SetUsageFunc(customUsageFunc)
 }
 
 func resetQueryOpt() {
