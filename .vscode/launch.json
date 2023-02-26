@@ -10,7 +10,7 @@
           "request": "launch",
           "mode": "auto",
           "program": "${workspaceFolder}",
-          "args": ["-l", "trace", "query", "packages", "-p", "context=dev", "-p", "tenant=tenant1", "-p", "build=true"],
+          "args": ["-l", "trace", "query", "packages", "-p", "context=dev", "-p", "tenant=t1", "-p", "build=true", "--disable-strict-matching"],
       },
       {
         "name": "Debug get command",
@@ -18,7 +18,7 @@
         "request": "launch",
         "mode": "auto",
         "program": "${workspaceFolder}",
-        "args": ["-l", "trace", "get", "package", "travel-web"],
+        "args": ["-l", "trace", "get", "package", "admin-web"],
     }
   ]
 }

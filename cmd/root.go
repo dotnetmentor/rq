@@ -39,7 +39,8 @@ var RootCmd = &cobra.Command{
 		log.Debug().Msg("reading manifest...")
 		err = tryReadManifest()
 		if err != nil {
-			return err
+			log.Error().AnErr("error", err).Msg("reading manifest...")
+			return nil
 		}
 
 		return nil
