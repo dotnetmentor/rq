@@ -1,11 +1,20 @@
 # rq
 
-Resource Query cli
+Resource Query - for dynamic querying of resources
 
 ## General
 
+- A resource can be anything you want (tenants, packages, markets etc.)
 - Properties are metdata about a resource (that can be selected but not queried)
-- Conditions can be queried to filter results (by providing parameters as flags)
+- Conditions can be declared to allow filtering of results (by providing parameters as flags)
+
+## Example file
+
+See `rq.yaml` for a basic example.
+
+## Help
+
+Run `rq --help` to get details on how to use the cli.
 
 ## Install
 

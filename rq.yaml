@@ -1,0 +1,41 @@
+config:
+  resources:
+    - kind: Package
+      names:
+        plural: packages
+        singular: package
+        short: pkg
+
+resources:
+  packages:
+    - key: proxy
+      when:
+        - context: local
+          build: false
+    - key: db
+      when:
+        - context: local
+          build: false
+        - context: dev
+          tenant: ((pr-.*)|(feature-.*))
+          build: false
+    - key: graphql-api
+    - key: admin-web
+    - key: customer-web
+      properties:
+        perTenant: true
+      when:
+        - tenant: t1
+        - tenant: t2
+        - tenant: t3
+        - context: dev
+          tenant: ((pr-.*)|(feature-.*))
+    - key: psp-1
+      when:
+        - tenant: t1
+        - tenant: t2
+        - context: dev
+          tenant: ((pr-.*)|(feature-.*))
+    - key: psp-2
+      when:
+        - tenant: t3
